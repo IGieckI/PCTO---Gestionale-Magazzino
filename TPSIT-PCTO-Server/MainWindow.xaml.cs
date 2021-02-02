@@ -59,19 +59,16 @@ namespace TPSIT_PCTO_Server
         }
         private void AcceptClient(Socket handler)
         {
-            while(true)
+            byte[] bytes = new byte[1024]; //buffer dei dati
+            string data = null; //messaggio
+            bool ok = false; //bool per uscire
+            string mex = "";
+            while (!ok)
             {
-                byte[] bytes = new byte[1024]; //buffer dei dati
-                string data = null; //messaggio
-                bool ok = false; //bool per uscire
-                string mex = "";
-                while(!ok)
-                {
-                    mex = "";
-                    int bytesRec = handler.Receive(bytes); //riceve i bytes
-                    data = "";
-                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
-                }
+                mex = "";
+                int bytesRec = handler.Receive(bytes); //riceve i bytes
+                data = "";
+                data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
             }
         }
     }
