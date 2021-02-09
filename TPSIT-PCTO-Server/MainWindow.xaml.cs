@@ -23,6 +23,7 @@ namespace TPSIT_PCTO_Server
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<Part> parts;
         List<Thread> accept;
         Thread connectionRequest;
         public MainWindow()
@@ -34,6 +35,8 @@ namespace TPSIT_PCTO_Server
         {
             try
             {
+                parts = new List<Part>();
+
                 accept = new List<Thread>();
                 IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress iPAddress = ipHostInfo.AddressList[1];
@@ -62,13 +65,45 @@ namespace TPSIT_PCTO_Server
             byte[] bytes = new byte[1024]; //buffer dei dati
             string data = null; //messaggio
             bool ok = false; //bool per uscire
-            string mex = "";
             while (!ok)
             {
-                mex = "";
                 int bytesRec = handler.Receive(bytes); //riceve i bytes
                 data = "";
                 data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
+                string[] mex = data.Split('|');
+                if(mex[0] == "ADD")
+                {
+                    ulong codice;
+                    string codiceS = "";
+                    for (int i = 0; i < 8; i++)
+                    {
+                        codiceS += mex[1][i].ToString();
+                    }
+                    codice = ulong.Parse(codiceS);
+
+                    foreach(Part x in parts)
+                    {
+                        if (x.code == codice)
+                            throw new Exception("tutto ciò non dovrebbe succedere, codici uguali");
+                    }
+                    parts.Add(new Part(codice));
+                }
+                if (mex[0] == "WITHDRAW")
+                {
+                    ulong codice;
+                    string codiceS = "";
+                    for (int i = 0; i < 8; i++)
+                    {
+                        codiceS += mex[1][i].ToString();
+                    }
+                    codice = ulong.Parse(codiceS);
+
+                    for(int i = 0; i < parts.Count; i++)
+                    {
+                        if (parts[i].code == codice)
+                            parts.RemoveAt(i);
+                    }
+                }
             }
         }
     }
