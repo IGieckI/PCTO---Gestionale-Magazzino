@@ -10,13 +10,14 @@ namespace TPSIT_PCTO_Server
 {
     class JsonConverter
     {
-        public void Converte(Part part)
+        public string  Serialize(Part part)
         {
-            string str = Newtonsoft.Json.JsonConvert.SerializeObject(part);
-            using (StreamWriter sw = new StreamWriter("output.json"))
-            {
-                sw.WriteLine(str);
-            }
+            return Newtonsoft.Json.JsonConvert.SerializeObject(part);
+        }
+        
+        public Part Deserialize(string jsonFile)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Part>(jsonFile);
         }
     }
 }
