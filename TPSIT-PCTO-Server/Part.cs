@@ -8,12 +8,12 @@ namespace TPSIT_PCTO_Server
 {
     class Part
     {
-        private ulong _code;
-        public Part(ulong codice)
+        private int _code;
+        public Part(int codice)
         {
             _code = codice;
         }
-        public ulong code
+        public int code
         {
             get
             {

@@ -6,5 +6,7 @@
         xmlns:local="clr-namespace:TPSIT_PCTO_Server"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Loaded="MainWindow_Loaded">
-    <Grid/>
+    <Grid>
+        <Label x:Name="lblConnection" Content="Waiting..." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
+    </Grid>
 </Window>

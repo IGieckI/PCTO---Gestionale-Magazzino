@@ -36,7 +36,6 @@ namespace TPSIT_PCTO_Server
             try
             {
                 parts = new List<Part>();
-
                 accept = new List<Thread>();
                 IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress iPAddress = ipHostInfo.AddressList[1];
@@ -62,6 +61,10 @@ namespace TPSIT_PCTO_Server
         }
         private void AcceptClient(Socket handler)
         {
+            this.Dispatcher.Invoke(() =>
+            {
+                lblConnection.Content = "Connected";
+            });
             byte[] bytes = new byte[1024]; //buffer dei dati
             string data = null; //messaggio
             bool ok = false; //bool per uscire
@@ -73,13 +76,13 @@ namespace TPSIT_PCTO_Server
                 string[] mex = data.Split('|');
                 if(mex[0] == "ADD")
                 {
-                    ulong codice;
+                    int codice;
                     string codiceS = "";
                     for (int i = 0; i < 8; i++)
                     {
                         codiceS += mex[1][i].ToString();
                     }
-                    codice = ulong.Parse(codiceS);
+                    codice = int.Parse(codiceS);
 
                     foreach(Part x in parts)
                     {
@@ -90,13 +93,13 @@ namespace TPSIT_PCTO_Server
                 }
                 if (mex[0] == "WITHDRAW")
                 {
-                    ulong codice;
+                    int codice;
                     string codiceS = "";
                     for (int i = 0; i < 8; i++)
                     {
                         codiceS += mex[1][i].ToString();
                     }
-                    codice = ulong.Parse(codiceS);
+                    codice = int.Parse(codiceS);
 
                     for(int i = 0; i < parts.Count; i++)
                     {
