@@ -26,6 +26,7 @@ namespace TPSIT_PCTO_Server
         List<Part> parts;
         List<Thread> accept;
         Thread connectionRequest;
+        private readonly object _lockOperazioni = new object();
         public MainWindow()
         {
             InitializeComponent();
@@ -41,9 +42,9 @@ namespace TPSIT_PCTO_Server
                 IPAddress iPAddress = ipHostInfo.AddressList[1];
                 //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
                 IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
-                accept = new List<Thread>();
                 Socket listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
                 connectionRequest = new Thread(() => Connect(listener));
+                connectionRequest.Start();
             }
             catch(Exception ex)
             {
@@ -74,37 +75,40 @@ namespace TPSIT_PCTO_Server
                 data = "";
                 data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
                 string[] mex = data.Split('|');
-                if(mex[0] == "ADD")
+                lock(_lockOperazioni)
                 {
-                    int codice;
-                    string codiceS = "";
-                    for (int i = 0; i < 8; i++)
+                    if (mex[0] == "ADD")
                     {
-                        codiceS += mex[1][i].ToString();
-                    }
-                    codice = int.Parse(codiceS);
+                        int codice;
+                        string codiceS = "";
+                        for (int i = 0; i < 8; i++)
+                        {
+                            codiceS += mex[1][i].ToString();
+                        }
+                        codice = int.Parse(codiceS);
 
-                    foreach(Part x in parts)
-                    {
-                        if (x.code == codice)
-                            throw new Exception("tutto ciò non dovrebbe succedere, codici uguali");
+                        foreach (Part x in parts)
+                        {
+                            if (x.code == codice)
+                                throw new Exception("tutto ciò non dovrebbe succedere, codici uguali");
+                        }
+                        parts.Add(new Part(codice));
                     }
-                    parts.Add(new Part(codice));
-                }
-                if (mex[0] == "WITHDRAW")
-                {
-                    int codice;
-                    string codiceS = "";
-                    for (int i = 0; i < 8; i++)
+                    if (mex[0] == "WITHDRAW")
                     {
-                        codiceS += mex[1][i].ToString();
-                    }
-                    codice = int.Parse(codiceS);
+                        int codice;
+                        string codiceS = "";
+                        for (int i = 0; i < 8; i++)
+                        {
+                            codiceS += mex[1][i].ToString();
+                        }
+                        codice = int.Parse(codiceS);
 
-                    for(int i = 0; i < parts.Count; i++)
-                    {
-                        if (parts[i].code == codice)
-                            parts.RemoveAt(i);
+                        for (int i = 0; i < parts.Count; i++)
+                        {
+                            if (parts[i].code == codice)
+                                parts.RemoveAt(i);
+                        }
                     }
                 }
             }
