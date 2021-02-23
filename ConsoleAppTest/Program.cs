@@ -33,6 +33,8 @@ namespace ConsoleAppTest
                     int bytesRec = sender.Receive(bytes); //riceve i bytes
                     ricevuto += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
                 }
+                sender.Shutdown(SocketShutdown.Both); //chiude le socket come nel server
+                sender.Close();
             }
             catch (Exception ex)
             { }

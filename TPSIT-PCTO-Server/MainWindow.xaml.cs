@@ -27,12 +27,7 @@ namespace TPSIT_PCTO_Server
         List<Thread> accept;
         Thread connectionRequest;
         private readonly object _lockOperazioni = new object();
-        Socket senderS; //socket sender
-        IPEndPoint remoteEP; //IP dell'endpoind
-        IPAddress ipAddress; //IP della macchina
-        IPHostEntry ipHostInfo;
         byte[] bytes = new byte[1024]; //buffer dei dati
-        bool serverdown = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -59,6 +54,7 @@ namespace TPSIT_PCTO_Server
                 connectionRequest = new Thread(() => Connect(senderS)); //avvia un thread per ricevere messaggi
                 connectionRequest.Start(); //e  lo starta*/
                 connectionRequest = new Thread(() => Connect());
+                connectionRequest.Start();
             }
             catch (Exception ex)
             {
