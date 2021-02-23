@@ -23,10 +23,16 @@ namespace TPSIT_PCTO_Server
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Prodotto> parts;
+        List<Part> parts;
         List<Thread> accept;
         Thread connectionRequest;
         private readonly object _lockOperazioni = new object();
+        Socket senderS; //socket sender
+        IPEndPoint remoteEP; //IP dell'endpoind
+        IPAddress ipAddress; //IP della macchina
+        IPHostEntry ipHostInfo;
+        byte[] bytes = new byte[1024]; //buffer dei dati
+        bool serverdown = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -36,29 +42,63 @@ namespace TPSIT_PCTO_Server
         {
             try
             {
-                parts = new List<Prodotto>();
+                parts = new List<Part>();
                 accept = new List<Thread>();
-                IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+                /*IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress iPAddress = ipHostInfo.AddressList[1];
                 //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
                 IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
                 Socket listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
-                connectionRequest = new Thread(() => Connect(listener));
-                connectionRequest.Start();
+                connectionRequest = new Thread(() => Connect(listener, localEndPoint));
+                connectionRequest.Start();*/
+                /*ipHostInfo = Dns.GetHostEntry(Dns.GetHostName()); //appena apre la finestra si connette al server
+                ipAddress = ipHostInfo.AddressList[1];
+                remoteEP = new IPEndPoint(ipAddress, 11000);
+                senderS = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
+                senderS.Connect(remoteEP); //connette all'endpoint
+                connectionRequest = new Thread(() => Connect(senderS)); //avvia un thread per ricevere messaggi
+                connectionRequest.Start(); //e  lo starta*/
+                connectionRequest = new Thread(() => Connect());
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-        private void Connect(Socket listener)
+        private void Connect()
         {
-            while (true)
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress iPAddress = ipHostInfo.AddressList[1];
+            //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
+            IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
+            List<Thread> lt = new List<Thread>();
+            Socket listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
+            try
             {
+                listener.Bind(localEndPoint); //bind della socket
+                listener.Listen(10); //numero massimo client
+                bool end = false;
+                while (!end)
+                {
+                    Console.WriteLine("Waiting for connection. . .");
+                    Socket handler = listener.Accept();
+                    //alias = null;
+                    lt.Add(new Thread(() => AcceptClient(handler)));
+                    lt[lt.Count - 1].Start();
+                }
+            }
+            catch (Exception ex)
+            { }
+            /*while (true)
+            {
+                listener.Bind(remoteEP); //bind della socket
+                listener.Listen(1); //numero massimo client
                 Socket handler = listener.Accept();
+
+
                 accept.Add(new Thread(() => AcceptClient(handler)));
                 accept[accept.Count - 1].Start();
-            }
+            }*/
         }
         private void AcceptClient(Socket handler)
         {
@@ -87,14 +127,14 @@ namespace TPSIT_PCTO_Server
                         }
                         codice = int.Parse(codiceS);
 
-                        foreach (Prodotto x in parts)
+                        foreach (Part x in parts)
                         {
-                            if (x.CodiceProdotto == codice)
+                            if (x.code == codice)
                                 throw new Exception("tutto ciò non dovrebbe succedere, codici uguali");
                         }
-                        parts.Add(new Prodotto(codice));
+                        parts.Add(new Part(codice));
                     }
-                    if (mex[0] == "REMOVE")//nome|password|codiceOperazione|codiceProdotto
+                    if (mex[0] == "WITHDRAW")
                     {
                         int codice;
                         string codiceS = "";
@@ -106,7 +146,7 @@ namespace TPSIT_PCTO_Server
 
                         for (int i = 0; i < parts.Count; i++)
                         {
-                            if (parts[i].CodiceProdotto == codice)
+                            if (parts[i].code == codice)
                                 parts.RemoveAt(i);
                         }
                     }
