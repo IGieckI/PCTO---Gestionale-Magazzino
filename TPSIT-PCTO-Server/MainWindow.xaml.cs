@@ -23,7 +23,7 @@ namespace TPSIT_PCTO_Server
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Part> parts;
+        List<Prodotto> parts;
         List<Thread> accept;
         Thread connectionRequest;
         private readonly object _lockOperazioni = new object();
@@ -36,7 +36,7 @@ namespace TPSIT_PCTO_Server
         {
             try
             {
-                parts = new List<Part>();
+                parts = new List<Prodotto>();
                 accept = new List<Thread>();
                 IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress iPAddress = ipHostInfo.AddressList[1];
@@ -46,14 +46,14 @@ namespace TPSIT_PCTO_Server
                 connectionRequest = new Thread(() => Connect(listener));
                 connectionRequest.Start();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
         private void Connect(Socket listener)
         {
-            while(true)
+            while (true)
             {
                 Socket handler = listener.Accept();
                 accept.Add(new Thread(() => AcceptClient(handler)));
@@ -75,7 +75,7 @@ namespace TPSIT_PCTO_Server
                 data = "";
                 data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
                 string[] mex = data.Split('|');
-                lock(_lockOperazioni)
+                lock (_lockOperazioni)
                 {
                     if (mex[0] == "ADD")
                     {
@@ -87,14 +87,14 @@ namespace TPSIT_PCTO_Server
                         }
                         codice = int.Parse(codiceS);
 
-                        foreach (Part x in parts)
+                        foreach (Prodotto x in parts)
                         {
-                            if (x.code == codice)
+                            if (x.CodiceProdotto == codice)
                                 throw new Exception("tutto ciò non dovrebbe succedere, codici uguali");
                         }
-                        parts.Add(new Part(codice));
+                        parts.Add(new Prodotto(codice));
                     }
-                    if (mex[0] == "WITHDRAW")
+                    if (mex[0] == "REMOVE")//nome|password|codiceOperazione|codiceProdotto
                     {
                         int codice;
                         string codiceS = "";
@@ -106,9 +106,13 @@ namespace TPSIT_PCTO_Server
 
                         for (int i = 0; i < parts.Count; i++)
                         {
-                            if (parts[i].code == codice)
+                            if (parts[i].CodiceProdotto == codice)
                                 parts.RemoveAt(i);
                         }
+                    }
+                    if (mex[0] == "DISCONNECT")
+                    {
+                        ok = true;
                     }
                 }
             }
