@@ -45,8 +45,9 @@ namespace ConsoleAppServer
                         bool ok = false;
                         while (!ok)
                         {
-                            /*int bytesRec = handler.Receive(bytes); //riceve i bytes
-                            data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa*/
+                            int bytesRec = handler.Receive(bytes); //riceve i bytes
+                            data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
+
                             ok = true;
                         }
                         bruh = true; //se c'è si offende e chiude la connesione
