@@ -28,6 +28,7 @@ namespace TPSIT_PCTO_Server
         Thread connectionRequest;
         private readonly object _lockOperazioni = new object();
         byte[] bytes = new byte[1024]; //buffer dei dati
+        Socket listener;
         public MainWindow()
         {
             InitializeComponent();
@@ -39,20 +40,6 @@ namespace TPSIT_PCTO_Server
             {
                 parts = new List<Part>();
                 accept = new List<Thread>();
-                /*IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-                IPAddress iPAddress = ipHostInfo.AddressList[1];
-                //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
-                IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
-                Socket listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
-                connectionRequest = new Thread(() => Connect(listener, localEndPoint));
-                connectionRequest.Start();*/
-                /*ipHostInfo = Dns.GetHostEntry(Dns.GetHostName()); //appena apre la finestra si connette al server
-                ipAddress = ipHostInfo.AddressList[1];
-                remoteEP = new IPEndPoint(ipAddress, 11000);
-                senderS = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
-                senderS.Connect(remoteEP); //connette all'endpoint
-                connectionRequest = new Thread(() => Connect(senderS)); //avvia un thread per ricevere messaggi
-                connectionRequest.Start(); //e  lo starta*/
                 connectionRequest = new Thread(() => Connect());
                 connectionRequest.Start();
             }
@@ -64,11 +51,15 @@ namespace TPSIT_PCTO_Server
         private void Connect()
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress iPAddress = ipHostInfo.AddressList[1];
+            IPAddress iPAddress = ipHostInfo.AddressList[2];
             //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
             IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
             List<Thread> lt = new List<Thread>();
-            Socket listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
+            listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
+            this.Dispatcher.Invoke(() =>
+            {
+                lblCurrentIP.Content = iPAddress.ToString();
+            });
             try
             {
                 listener.Bind(localEndPoint); //bind della socket
@@ -152,6 +143,26 @@ namespace TPSIT_PCTO_Server
                     }
                 }
             }
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(connectionRequest.ThreadState == ThreadState.Running)
+            {
+                listener.Close();
+                listener = null;
+                connectionRequest.Abort();
+                connectionRequest.Join();
+            }
+            foreach(Thread t in accept)
+            {
+                if(t.ThreadState == ThreadState.Running)
+                {
+                    t.Abort();
+                    t.Join();
+                }
+            }
+            
         }
     }
 }
