@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
 
-namespace ConsoleAppServer
+namespace _5F_Gruppo_2_Server
 {
-    class Server
+    class Program
     {
         static void Main(string[] args)
         {

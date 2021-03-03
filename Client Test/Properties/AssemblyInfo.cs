@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Le informazioni generali relative a un assembly sono controllate dal seguente 
 // set di attributi. Modificare i valori di questi attributi per modificare le informazioni
 // associate a un assembly.
-[assembly: AssemblyTitle("ConsoleAppServer")]
+[assembly: AssemblyTitle("Client Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ConsoleAppServer")]
+[assembly: AssemblyProduct("Client Test")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Se il progetto viene esposto a COM, il GUID seguente verrà utilizzato come ID della libreria dei tipi
-[assembly: Guid("8cf3dcda-5e59-4065-9862-c0fe594bfbb6")]
+[assembly: Guid("6c076056-87d6-45f4-9a35-91d83d5f3ff6")]
 
 // Le informazioni sulla versione di un assembly sono costituite dai seguenti quattro valori:
 //
