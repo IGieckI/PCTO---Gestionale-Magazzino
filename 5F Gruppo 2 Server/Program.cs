@@ -12,7 +12,6 @@ namespace _5F_Gruppo_2_Server
         {
             Console.WriteLine("Programma Server\n\n");
 
-            byte[] bytes = new byte[1024]; //buffer dei dati
             string data = null;
             //ottengo l'ip del destinatario
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
@@ -62,6 +61,24 @@ namespace _5F_Gruppo_2_Server
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); //mostra l'errore
+            }
+        }
+        static void Connection(Socket h)
+        {
+            byte[] bytes = new byte[1024]; //buffer dei dati
+            bool k = false;
+            while(!k)
+            {
+                string data = null; //messaggio ricevuto
+                bool ok = false;
+                while (!ok)
+                {
+                    int bytesRec = h.Receive(bytes); //riceve i bytes
+                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
+
+                    ok = true;
+                }
+                k = true; //se c'è si offende e chiude la connesione
             }
         }
     }
