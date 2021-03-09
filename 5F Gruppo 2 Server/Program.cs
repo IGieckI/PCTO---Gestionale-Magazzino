@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Security.Cryptography;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace _5F_Gruppo_2_Server
 {
@@ -19,6 +21,7 @@ namespace _5F_Gruppo_2_Server
             //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
             IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
             Console.WriteLine("IP: " + iPAddress.ToString());
+            List<Thread> threads = new List<Thread>();
 
             Socket listener = new Socket(iPAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); //crea la socket
             try
@@ -31,26 +34,11 @@ namespace _5F_Gruppo_2_Server
                 {
                     Console.WriteLine("Waiting for connection. . .");
                     Socket handler = null; //dichiara la socket
-                    if (bruh) //se non è connesso a un client
-                    {
-                        handler = listener.Accept(); //accetta un client, è bloccante
-                        bruh = false;
-                    }
-                    while (!bruh)
-                    {
-                        data = null; //messaggio ricevuto
-                        bool ok = false;
-                        while (!ok)
-                        {
-                            int bytesRec = handler.Receive(bytes); //riceve i bytes
-                            data += Encoding.ASCII.GetString(bytes, 0, bytesRec); //trasforma in stringa
+                    handler = listener.Accept(); //accetta un client, è bloccante
 
-                            ok = true;
-                        }
-                        bruh = true; //se c'è si offende e chiude la connesione
-                    }
-                    handler.Shutdown(SocketShutdown.Both); //aspetta che la socket finisca di fare ciò che sta facendo e chiude la socket
-                    handler.Close();
+                    threads.Add(new Thread(() => Connection(listener)));
+                    threads[threads.Count - 1].Start();
+
                     while (Console.KeyAvailable) //controlla se ci sono tasti premuti
                     {
                         if (Console.ReadKey(true).Key == ConsoleKey.Q) //se q è stata premuta almeno 1 volta
@@ -79,6 +67,8 @@ namespace _5F_Gruppo_2_Server
                     ok = true;
                 }
                 k = true; //se c'è si offende e chiude la connesione
+                h.Shutdown(SocketShutdown.Both); //aspetta che la socket finisca di fare ciò che sta facendo e chiude la socket
+                h.Close();
             }
         }
     }
