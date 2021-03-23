@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [Magazzino]    Script Date: 3/23/2021 12:38:20 PM ******/
+/****** Object:  Database [Magazzino]    Script Date: 3/23/2021 1:14:50 PM ******/
 CREATE DATABASE [Magazzino]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -80,18 +80,18 @@ ALTER DATABASE [Magazzino] SET QUERY_STORE = OFF
 GO
 USE [Magazzino]
 GO
-/****** Object:  Table [dbo].[Pezzo]    Script Date: 3/23/2021 12:38:20 PM ******/
+/****** Object:  Table [dbo].[Prodotti]    Script Date: 3/23/2021 1:14:50 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Pezzo](
+CREATE TABLE [dbo].[Prodotti](
 	[Codice_Prodotto] [varchar](50) NULL,
 	[Quantità] [varchar](50) NULL,
 	[Nome_Prodotto] [varchar](50) NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Utenti]    Script Date: 3/23/2021 12:38:20 PM ******/
+/****** Object:  Table [dbo].[Utenti]    Script Date: 3/23/2021 1:14:50 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
