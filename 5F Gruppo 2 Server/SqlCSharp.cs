@@ -7,21 +7,6 @@ namespace _5F_Gruppo_2_Server
     class SqlCSharp
     {
         //Dario Bekic 5F Parte C# SQL PCTO
-        static void Main(string[] args)
-        {
-            try
-            {
-                //Console.WriteLine(Operation("new|7|3|Tambu"));
-                //Console.WriteLine(Operation("new|534|5|Tambu"));
-                //Console.WriteLine(Operation("database"));
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("" + ex.Message);
-                Console.Read();
-            }
-        }
         static void ModificaSuPezzo(string comando, out SqlCommand command, SqlConnection cnn, SqlDataAdapter adapter)
         {
             command = new SqlCommand(comando, cnn);
