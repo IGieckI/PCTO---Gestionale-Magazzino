@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Terminale
 {
@@ -12,12 +14,14 @@ namespace Terminale
     {
         private string _nomePCUtenti = "DESKTOP-CDHTOA2";
         private string _nomePCProdotti = "DESKTOP-CDHTOA2";
-        private string _nomeDatabaseUtenti = "Test";
+        private string _nomeDatabaseUtenti = "Magazzino";
         private string _nomeTabellaUtenti = "Utenti";
-        private string _nomeDatabaseProdotti = "Test";
+        private string _nomeDatabaseProdotti = "Magazzino";
         private string _nomeTabellaProdotti = "Prodotti";
         private List<Prodotto> _prodotti = new List<Prodotto>();
         private List<Utente> _utenti = new List<Utente>();
+        private List<string> Users = new List<string>();
+        private List<string> Passwords = new List<string>();
         private bool firstTime = true;
         public MainWindow()
         {
@@ -38,7 +42,7 @@ namespace Terminale
 
         private void btnConfermaUtente_Click(object sender, RoutedEventArgs e)
         {
-            if(txtUsername.Text=="")
+            if (txtUsername.Text == "")
             {
                 MessageBox.Show("L'username non può essere vuoto", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -73,12 +77,12 @@ namespace Terminale
 
             if (txtNome.Text == "")
             {
-                MessageBox.Show("Il nome del prodotto non può essere vuoto","Errore",MessageBoxButton.OK,MessageBoxImage.Error);
+                MessageBox.Show("Il nome del prodotto non può essere vuoto", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             try
             {
-                if(int.Parse(txtQuantita.Text)<0)
+                if (int.Parse(txtQuantita.Text) < 0)
                     MessageBox.Show("Non puoi inserire quantità negative", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch
@@ -98,7 +102,7 @@ namespace Terminale
             ModificaSuPezzo(sql, out command, cnn, adapter);
             cnn.Close();
             _prodotti.Add(new Prodotto(txtCodice.Text, txtNome.Text, int.Parse(txtQuantita.Text)));
-            dgProdotti.ItemsSource = _utenti;
+            dgProdotti.ItemsSource = _prodotti;
             dgProdotti.Items.Refresh();
         }
 
@@ -112,6 +116,33 @@ namespace Terminale
             _prodotti.Clear();
             _utenti.Clear();
 
+            DataGridTextColumn colonnaUsername = new DataGridTextColumn();
+            colonnaUsername.Header = "Username";
+            colonnaUsername.IsReadOnly = true;
+            colonnaUsername.Binding = new Binding("Username");
+            dgUtenti.Columns.Add(colonnaUsername);
+            DataGridTextColumn colonnaPassword = new DataGridTextColumn();
+            colonnaPassword.Header = "Password";
+            colonnaPassword.IsReadOnly = true;
+            colonnaPassword.Binding = new Binding("Password");
+            dgUtenti.Columns.Add(colonnaPassword);
+
+            DataGridTextColumn colonnaNome = new DataGridTextColumn();
+            colonnaNome.Header = "Codice";
+            colonnaNome.IsReadOnly = true;
+            colonnaNome.Binding = new Binding("Codice");
+            dgProdotti.Columns.Add(colonnaNome);
+            DataGridTextColumn colonnaCodice = new DataGridTextColumn();
+            colonnaCodice.Header = "Nome";
+            colonnaCodice.IsReadOnly = true;
+            colonnaCodice.Binding = new Binding("Nome");
+            dgProdotti.Columns.Add(colonnaCodice);
+            DataGridTextColumn colonnaQuantità = new DataGridTextColumn();
+            colonnaQuantità.Header = "Quantita";
+            colonnaQuantità.IsReadOnly = true;
+            colonnaQuantità.Binding = new Binding("Quantita");
+            dgProdotti.Columns.Add(colonnaQuantità);
+
             SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCUtenti};Initial Catalog={_nomeDatabaseUtenti};Integrated Security=SSPI;");
             cnn.Open();
             string sql = $"SELECT * FROM {_nomeTabellaUtenti}";
@@ -119,6 +150,8 @@ namespace Terminale
             SqlDataReader OutPutSelectAll = command.ExecuteReader();
             while (OutPutSelectAll.Read())
             {
+                string str = OutPutSelectAll[0].ToString() + "," + OutPutSelectAll[1].ToString();
+                dgUtenti.Items.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
                 _utenti.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
             }
             cnn.Close();
@@ -130,29 +163,15 @@ namespace Terminale
             OutPutSelectAll = command.ExecuteReader();
             while (OutPutSelectAll.Read())
             {
+                dgProdotti.Items.Add(new Prodotto(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString(), int.Parse(OutPutSelectAll[2].ToString())));
                 _prodotti.Add(new Prodotto(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString(), int.Parse(OutPutSelectAll[2].ToString())));
             }
             cnn.Close();
-
-            dgUtenti.ItemsSource = _utenti;
-            dgProdotti.ItemsSource = _prodotti;
-            dgUtenti.Items.Refresh();
-            dgProdotti.Items.Refresh();
         }
 
         private void dgUtenti_LayoutUpdated(object sender, EventArgs e)
         {
 
-            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCUtenti};Initial Catalog={_nomeDatabaseUtenti};Integrated Security=SSPI;");
-            cnn.Open();
-            string sql = $"SELECT * FROM {_nomeTabellaUtenti}";
-            SqlCommand command = new SqlCommand(sql, cnn);
-            SqlDataReader OutPutSelectAll = command.ExecuteReader();
-            while (OutPutSelectAll.Read())
-            {
-                _utenti.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
-            }
-            cnn.Close();
         }
 
         private void dgProdotti_LayoutUpdated(object sender, EventArgs e)
@@ -167,6 +186,22 @@ namespace Terminale
                 _prodotti.Add(new Prodotto(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString(), int.Parse(OutPutSelectAll[2].ToString())));
             }
             cnn.Close();
+        }
+
+        private void dgUtenti_RowEditEnding(object sender, System.Windows.Controls.DataGridRowEditEndingEventArgs e)
+        {
+            int a;
+
+            /*SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCUtenti};Initial Catalog={_nomeDatabaseUtenti};Integrated Security=SSPI;");
+            cnn.Open();
+            string sql = $"SELECT * FROM {_nomeTabellaUtenti}";
+            SqlCommand command = new SqlCommand(sql, cnn);
+            SqlDataReader OutPutSelectAll = command.ExecuteReader();
+            while (OutPutSelectAll.Read())
+            {
+                _utenti.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
+            }
+            cnn.Close();*/
         }
     }
 }
