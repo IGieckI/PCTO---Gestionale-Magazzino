@@ -6,6 +6,7 @@ namespace _5F_Gruppo_2_Server
 {
     class SqlCSharp
     {
+        static string _nomePCDB = "DESKTOP-CDHTOA2";
         //Dario Bekic 5F Parte C# SQL PCTO
         static void ModificaSuPezzo(string comando, out SqlCommand command, SqlConnection cnn, SqlDataAdapter adapter)
         {
@@ -19,7 +20,7 @@ namespace _5F_Gruppo_2_Server
             string connectionString;
             SqlConnection cnn;
             //connectionString = @"Data Source=PC1227;Initial Catalog=Magazzino;User ID=sa;Password=burbero2020";
-            connectionString = @"Data Source=LAPTOP-HKOJICES;Initial Catalog=Magazzino;Integrated Security=SSPI;";
+            connectionString = $@"Data Source={_nomePCDB};Initial Catalog=Magazzino;Integrated Security=SSPI;";
             cnn = new SqlConnection(connectionString);
             SqlDataReader OutPutSelectAll;
             SqlCommand command;
