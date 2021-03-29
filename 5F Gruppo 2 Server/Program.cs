@@ -82,7 +82,7 @@ namespace _5F_Gruppo_2_Server
                 bool found = false;
                 while (OutPutSelectAll.Read() && found == false)
                 {
-                    if (Elementi[0] == "asd" && Elementi[1] == "asd")
+                    if (Elementi[0] == OutPutSelectAll[0].ToString() && Elementi[1] == OutPutSelectAll[1].ToString())
                         found = true;
                 }
 

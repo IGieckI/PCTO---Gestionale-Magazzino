@@ -15,7 +15,7 @@ namespace _5F_Gruppo_2_Server
             adapter.InsertCommand.ExecuteNonQuery();
             command.Dispose();
         }
-        static string Operation(string Comando)
+        string Operation(string Comando)
         {
             string connectionString;
             SqlConnection cnn;
