@@ -8,11 +8,11 @@ namespace Terminale
 {
     class Utente
     {
-        public string Nome { get; set; }
+        public string Username { get; set; }
         public string Password { get; set; }
         public Utente(string nome, string password)
         {
-            Nome = nome;
+            Username = nome;
             Password = password;
         }
     }
