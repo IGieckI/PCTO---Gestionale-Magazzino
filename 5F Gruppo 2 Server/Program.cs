@@ -87,44 +87,60 @@ namespace _5F_Gruppo_2_Server
                 }
 
                 OutPutSelectAll.Close();
-                if (found == true)
+                try
                 {
-                    switch (Elementi[2])
+                    if (Elementi[2] == "check")
                     {
-                        case "new":
-                            string cmd = "SELECT * FROM dbo.Pezzo";
-                            command = new SqlCommand(cmd, cnn);
-                            OutPutSelectAll = command.ExecuteReader();
-                            bool error = false;
-                            while (OutPutSelectAll.Read() && error == false)
+                        if (found)
+                            h.Send(Encoding.ASCII.GetBytes("004"));
+                        else
+                            h.Send(Encoding.ASCII.GetBytes("003"));
+                    }
+                    else
+                    {
+                        if (found == true)
+                        {
+                            string datas = "";
+                            for (int i = 2; i < Elementi.Length; i++)
                             {
-                                if (Elementi[3] == OutPutSelectAll[0].ToString() || Elementi[5] == OutPutSelectAll[3].ToString())
-                                    error = true;
+                                datas += Elementi[i];
+                                if (i < Elementi.Length - 1)
+                                    datas += "|";
                             }
-
-                            break;
-                        case "add":
-                            break;
-                        case "remove":
-                            break;
-                        case "check":
-                            bytearr = Encoding.ASCII.GetBytes("004|");
+                            SqlCSharp sqlCSharp = new SqlCSharp();
+                            h.Send(Encoding.ASCII.GetBytes(sqlCSharp.Operation(datas)));
+                        }
+                        else
+                        {
+                            bytearr = Encoding.ASCII.GetBytes("003");
                             h.Send(bytearr); //invia al client un messaggio
-                            break;
-                        case "database":
-                            break;
-                        case "select":
-                            break;
+                        }
                     }
                 }
-                else
+                catch(IndexOutOfRangeException ex)
                 {
-                    bytearr = Encoding.ASCII.GetBytes("003|");
-                    h.Send(bytearr); //invia al client un messaggio
-                }
+                    h.Send(Encoding.ASCII.GetBytes("000"));
+                }                
+                
                 k = true; //se c'è si offende e chiude la connesione
                 h.Shutdown(SocketShutdown.Both); //aspetta che la socket finisca di fare ciò che sta facendo e chiude la socket
                 h.Close();
+            }
+        }
+        static string CreateMD5(string input)
+        {
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Convert the byte array to hexadecimal string
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+                return sb.ToString().ToLower();
             }
         }
     }
