@@ -14,10 +14,9 @@ namespace _5F_Gruppo_2_Server
 
         }
 
-        public SqlCSharp(string nomePCDB, string nomeDB)//PC e nome DB personalizzati
+        public SqlCSharp(string nomePCDB)//PC e nome DB personalizzati
         {
             _nomePCDB = nomePCDB;
-            _nomeDB = nomeDB;
         }
 
         //Dario Bekic 5F Parte C# SQL PCTO

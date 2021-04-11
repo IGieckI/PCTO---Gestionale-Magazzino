@@ -11,14 +11,20 @@ namespace _5F_Gruppo_2_Server
 {
     class Program
     {
-        static string _nomePCDB = "DESKTOP-CDHTOA2";
+        //INFORMAZIONE IMPORTANTE DA INSERIRE!git 
+        static string _nomePCDB = "DESKTOP-CDHTOA2";//Nome del pc su cui gira il database
+
         static void Main(string[] args)
         {
             Console.WriteLine("Programma Server\n\n");
 
             //ottengo l'ip del destinatario
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress iPAddress = ipHostInfo.AddressList[1];
+            IPAddress iPAddress;
+            if(ipHostInfo.AddressList.Length>2)
+                iPAddress = ipHostInfo.AddressList[2];
+            else
+                iPAddress = ipHostInfo.AddressList[1];
             //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
             IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
             Console.WriteLine("IP: " + iPAddress.ToString());
@@ -107,7 +113,7 @@ namespace _5F_Gruppo_2_Server
                                 if (i < Elementi.Length - 1)
                                     datas += "|";
                             }
-                            SqlCSharp sqlCSharp = new SqlCSharp();
+                            SqlCSharp sqlCSharp = new SqlCSharp(_nomePCDB);
                             h.Send(Encoding.ASCII.GetBytes(sqlCSharp.Operation(datas)));
                         }
                         else
