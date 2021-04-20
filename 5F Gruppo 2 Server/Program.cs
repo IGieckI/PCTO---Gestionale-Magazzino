@@ -21,10 +21,7 @@ namespace _5F_Gruppo_2_Server
             //ottengo l'ip del destinatario
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress iPAddress;
-            if(ipHostInfo.AddressList.Length>2)
-                iPAddress = ipHostInfo.AddressList[2];
-            else
-                iPAddress = ipHostInfo.AddressList[1];
+            iPAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length-1];
             //IPAddress iPAddress = IPAddress.Parse("10.12.0.28");
             IPEndPoint localEndPoint = new IPEndPoint(iPAddress, 11000); //creo un endpoint con il mio ip e la porta di comunicazione
             Console.WriteLine("IP: " + iPAddress.ToString());

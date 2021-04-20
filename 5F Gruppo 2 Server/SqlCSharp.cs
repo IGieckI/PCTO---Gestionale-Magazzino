@@ -102,17 +102,24 @@ namespace _5F_Gruppo_2_Server
             }
             else if (Elementi[0] == "remove") //Rimuove
             {
-                sql = $"SELECT Quantità FROM dbo.Prodotti WHERE Codice_Prodotto='{Elementi[1]}'";
-                command = new SqlCommand(sql, cnn);
-                int OutPutSelect = ((int)(command.ExecuteScalar())), QuantitàDaSottrarre = 1; //Imposta la quantità sottratta di default ad 1
-                QuantitàDaSottrarre = int.Parse(Elementi[2]);
-                if (OutPutSelect - QuantitàDaSottrarre < 0)//Se si sfora lo 0 produce errore
+                try
                 {
-                    cnn.Close();//Chiude la conn in caso di errore
-                    return "009|" + Elementi[1];
+                    sql = $"SELECT Quantità FROM dbo.Prodotti WHERE Codice_Prodotto='{Elementi[1]}'";
+                    command = new SqlCommand(sql, cnn);
+                    int OutPutSelect = ((int)(command.ExecuteScalar())), QuantitàDaSottrarre = 1; //Imposta la quantità sottratta di default ad 1
+                    QuantitàDaSottrarre = int.Parse(Elementi[2]);
+                    if (OutPutSelect - QuantitàDaSottrarre < 0)//Se si sfora lo 0 produce errore
+                    {
+                        cnn.Close();//Chiude la conn in caso di errore
+                        return "009|" + Elementi[1];
+                    }
+                    else
+                        ModificaSuPezzo($"UPDATE dbo.Prodotti SET Quantità=Quantità-{QuantitàDaSottrarre} WHERE Codice_Prodotto= {Elementi[1]}", out command, cnn, adapter);
                 }
-                else
-                    ModificaSuPezzo($"UPDATE dbo.Prodotti SET Quantità=Quantità-{QuantitàDaSottrarre} WHERE Codice_Prodotto= {Elementi[1]}", out command, cnn, adapter);
+                catch(Exception ex)
+                {
+                    return "005|" + Elementi[1];
+                }
             }
             else if (Elementi[0] == "select") //Select di una riga
             {
@@ -165,18 +172,18 @@ namespace _5F_Gruppo_2_Server
         /// <returns></returns>
         bool IsThereError000(string ActionCode, int ParameterNumber)
         {
-            if (ActionCode == "add" && ParameterNumber == 3)
-                return false;
-            else if (ActionCode == "new" && ParameterNumber == 4)
-                return false;
-            else if (ActionCode == "remove" && ParameterNumber == 3)
-                return false;
-            else if (ActionCode == "select" && ParameterNumber == 2)
-                return false;
-            else if (ActionCode == "database" && ParameterNumber == 1)
-                return false;
-            else
+            if (ActionCode == "add" && ParameterNumber != 3)
                 return true;
+            else if (ActionCode == "new" && ParameterNumber != 4)
+                return true;
+            else if (ActionCode == "remove" && ParameterNumber != 3)
+                return true;
+            else if (ActionCode == "select" && ParameterNumber != 2)
+                return true;
+            else if (ActionCode == "database" && ParameterNumber != 1)
+                return true;
+            else
+                return false;
         }
     }
 }
