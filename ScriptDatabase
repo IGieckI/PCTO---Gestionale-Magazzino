@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [Magazzino]    Script Date: 3/23/2021 1:25:40 PM ******/
+/****** Object:  Database [Magazzino]    Script Date: 20/04/2021 09:46:13 ******/
 CREATE DATABASE [Magazzino]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -80,18 +80,18 @@ ALTER DATABASE [Magazzino] SET QUERY_STORE = OFF
 GO
 USE [Magazzino]
 GO
-/****** Object:  Table [dbo].[Prodotti]    Script Date: 3/23/2021 1:25:40 PM ******/
+/****** Object:  Table [dbo].[Prodotti]    Script Date: 20/04/2021 09:46:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Prodotti](
 	[Codice_Prodotto] [varchar](50) NULL,
-	[Quantità] [varchar](50) NULL,
+	[Quantità] [int] NULL,
 	[Nome_Prodotto] [varchar](50) NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Utenti]    Script Date: 3/23/2021 1:25:40 PM ******/
+/****** Object:  Table [dbo].[Utenti]    Script Date: 20/04/2021 09:46:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -101,11 +101,13 @@ CREATE TABLE [dbo].[Utenti](
 	[Password] [varchar](50) NULL
 ) ON [PRIMARY]
 GO
-INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000000', N'Nintendo Switch', N'10')
+INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000000', 45, N'Bulloni')
 GO
-INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000001', N'XBOX', N'5')
+INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000001', 4, N'Marmitta')
 GO
-INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000002', N'PS4', N'0')
+INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000002', 1, N'Motore')
+GO
+INSERT [dbo].[Prodotti] ([Codice_Prodotto], [Quantità], [Nome_Prodotto]) VALUES (N'00000003', 4, N'Parabrezza')
 GO
 INSERT [dbo].[Utenti] ([Username], [Password]) VALUES (N'user', N'ee11cbb19052e40b07aac0ca060c23ee')
 GO
