@@ -13,12 +13,7 @@ namespace Terminale
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string _nomePCUtenti = "DESKTOP-CDHTOA2";
-        private string _nomePCProdotti = "DESKTOP-CDHTOA2";
-        private string _nomeDatabaseUtenti = "Magazzino";
-        private string _nomeTabellaUtenti = "Utenti";
-        private string _nomeDatabaseProdotti = "Magazzino";
-        private string _nomeTabellaProdotti = "Prodotti";
+        private string _nomePCDB = "PC1229";
         private List<Prodotto> _prodotti = new List<Prodotto>();
         private List<Utente> _utenti = new List<Utente>();
         private List<string> Users = new List<string>();
@@ -85,18 +80,18 @@ namespace Terminale
                 MessageBox.Show("La password non può essere vuota", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            SqlConnection cnn;
-            string connectionString = $@"Data Source={_nomePCUtenti};Initial Catalog={_nomeDatabaseUtenti};Integrated Security=SSPI;";
-            cnn = new SqlConnection(connectionString);
+            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020");
             SqlCommand command;
             String sql;
             SqlDataAdapter adapter = new SqlDataAdapter();
             cnn.Open();
-            sql = $"INSERT INTO {_nomeTabellaUtenti} VALUES('{txtUsername.Text}','{StringToMD5(txtPassword.Password).ToLower()}')";
+            sql = $"INSERT INTO Utenti VALUES('{txtUsername.Text}','{StringToMD5(txtPassword.Password).ToLower()}')";
             command = new SqlCommand(sql, cnn);
             ModificaSuPezzo(sql, out command, cnn, adapter);
             cnn.Close();
             _utenti.Add(new Utente(txtUsername.Text, StringToMD5(txtPassword.Password).ToLower()));
+            txtUsername.Text = "";
+            txtPassword.Password = "";
             ListUpdate();
         }
 
@@ -124,20 +119,20 @@ namespace Terminale
                 MessageBox.Show("La quantità deve essere un numero", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            SqlConnection cnn;
-            string connectionString = $@"Data Source={_nomePCProdotti};Initial Catalog={_nomeDatabaseProdotti};Integrated Security=SSPI;";
-            cnn = new SqlConnection(connectionString);
+            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020");
             SqlCommand command;
             String sql;
             SqlDataAdapter adapter = new SqlDataAdapter();
             cnn.Open();
-            sql = $"INSERT INTO {_nomeTabellaProdotti} VALUES('{txtCodice.Text}','{txtNome.Text}','{txtQuantita.Text}')";
+            sql = $"INSERT INTO Prodotti VALUES('{txtCodice.Text}',{txtQuantita.Text},'{txtNome.Text}')";
             command = new SqlCommand(sql, cnn);
             ModificaSuPezzo(sql, out command, cnn, adapter);
             cnn.Close();
-            _prodotti.Add(new Prodotto(txtCodice.Text, txtNome.Text, int.Parse(txtQuantita.Text)));
-            dgProdotti.ItemsSource = _prodotti;
-            dgProdotti.Items.Refresh();
+            _prodotti.Add(new Prodotto(txtCodice.Text,int.Parse(txtQuantita.Text), txtNome.Text));
+            txtCodice.Text = "";
+            txtNome.Text = "";
+            txtQuantita.Text = "";
+            ListUpdate();
         }
 
         private void btnAggiorna_Click(object sender, RoutedEventArgs e)
@@ -147,39 +142,48 @@ namespace Terminale
 
         private void ListUpdate()
         {
-            _prodotti.Clear();
-            _utenti.Clear();
-            dgProdotti.Items.Clear();
-            dgUtenti.Items.Clear();
-
-            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCUtenti};Initial Catalog={_nomeDatabaseUtenti};Integrated Security=SSPI;");
-            cnn.Open();
-            string sql = $"SELECT * FROM {_nomeTabellaUtenti}";
-            SqlCommand command = new SqlCommand(sql, cnn);
-            SqlDataReader OutPutSelectAll = command.ExecuteReader();
-            while (OutPutSelectAll.Read())
+            try
             {
-                string str = OutPutSelectAll[0].ToString() + "," + OutPutSelectAll[1].ToString();
-                dgUtenti.Items.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
-                _utenti.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
-            }
-            cnn.Close();
+                _prodotti.Clear();
+                _utenti.Clear();
+                dgProdotti.Items.Clear();
+                dgUtenti.Items.Clear();
 
-            cnn = new SqlConnection($@"Data Source={_nomePCProdotti};Initial Catalog={_nomeDatabaseProdotti};Integrated Security=SSPI;");
-            cnn.Open();
-            sql = $"SELECT * FROM {_nomeTabellaProdotti}";
-            command = new SqlCommand(sql, cnn);
-            OutPutSelectAll = command.ExecuteReader();
-            while (OutPutSelectAll.Read())
+                SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020");
+                cnn.Open();
+                string sql = $"SELECT * FROM Utenti";
+                SqlCommand command = new SqlCommand(sql, cnn);
+                SqlDataReader OutPutSelectAll = command.ExecuteReader();
+                while (OutPutSelectAll.Read())
+                {
+                    string str = OutPutSelectAll[0].ToString() + "," + OutPutSelectAll[1].ToString();
+                    dgUtenti.Items.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
+                    _utenti.Add(new Utente(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString()));
+                }
+                cnn.Close();
+
+                cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020");
+                cnn.Open();
+                sql = $"SELECT * FROM Prodotti";
+                command = new SqlCommand(sql, cnn);
+                OutPutSelectAll = command.ExecuteReader();
+                while (OutPutSelectAll.Read())
+                {
+                    string str = OutPutSelectAll[0].ToString() + "," + OutPutSelectAll[1].ToString() + "," + OutPutSelectAll[2].ToString();
+                    dgProdotti.Items.Add(new Prodotto(OutPutSelectAll[0].ToString(), int.Parse(OutPutSelectAll[1].ToString()), OutPutSelectAll[2].ToString()));
+                    _prodotti.Add(new Prodotto(OutPutSelectAll[0].ToString(), int.Parse(OutPutSelectAll[1].ToString()), OutPutSelectAll[2].ToString()));
+                }
+                cnn.Close();
+
+                dgProdotti.Items.Refresh();
+                dgUtenti.Items.Refresh();
+            }
+            catch(Exception ex)
             {
-                string str = OutPutSelectAll[0].ToString() + "," + OutPutSelectAll[1].ToString() + "," + OutPutSelectAll[2].ToString();
-                dgProdotti.Items.Add(new Prodotto(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString(), int.Parse(OutPutSelectAll[2].ToString())));
-                _prodotti.Add(new Prodotto(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString(), int.Parse(OutPutSelectAll[2].ToString())));
+                MessageBox.Show(ex.Message,"Errore(Terminale)",MessageBoxButton.OK,MessageBoxImage.Error);
+                System.Windows.Application.Current.Shutdown();
             }
-            cnn.Close();
-
-            dgProdotti.Items.Refresh();
-            dgUtenti.Items.Refresh();
+            
         }
 
         private void dgUtenti_LayoutUpdated(object sender, EventArgs e)
@@ -189,14 +193,14 @@ namespace Terminale
 
         private void dgProdotti_LayoutUpdated(object sender, EventArgs e)
         {
-            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCProdotti};Initial Catalog={_nomeDatabaseProdotti};Integrated Security=SSPI;");
+            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020");
             cnn.Open();
-            string sql = $"SELECT * FROM {_nomeTabellaProdotti}";
+            string sql = $"SELECT * FROM Prodotti";
             SqlCommand command = new SqlCommand(sql, cnn);
             SqlDataReader OutPutSelectAll = command.ExecuteReader();
             while (OutPutSelectAll.Read())
             {
-                _prodotti.Add(new Prodotto(OutPutSelectAll[0].ToString(), OutPutSelectAll[1].ToString(), int.Parse(OutPutSelectAll[2].ToString())));
+                _prodotti.Add(new Prodotto(OutPutSelectAll[0].ToString(), int.Parse(OutPutSelectAll[1].ToString()), OutPutSelectAll[2].ToString()));
             }
             cnn.Close();
         }

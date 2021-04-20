@@ -7,8 +7,7 @@ namespace _5F_Gruppo_2_Server
     class SqlCSharp
     {
         //Dario Bekic 5F Parte C# SQL PCTO
-        string _nomePCDB = "DESKTOP-CDHTOA2"; //Nome del server(di default è il nome del mio pc di casa)
-        string _nomeDB = "Magazzino";//Nome del database
+        string _nomePCDB = "PC1229"; //Nome del server
 
         public SqlCSharp()//Mantiene le impostazioni di default
         {}
@@ -38,10 +37,8 @@ namespace _5F_Gruppo_2_Server
         public string Operation(string Comando)
         {
             string connectionString; //Stringa che conterrà i parametri per connettersi ad SQLServer
-            SqlConnection cnn; //Un oggetto di tipo sqlconnection
+            SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020"); //Un oggetto di tipo sqlconnection
             //connectionString = @"Data Source=PC1227;Initial Catalog=Magazzino;User ID=sa;Password=burbero2020";
-            connectionString = $@"Data Source={_nomePCDB};Initial Catalog={_nomeDB};Integrated Security=SSPI;";
-            cnn = new SqlConnection(connectionString); //Instanzio la connessione
             SqlDataReader OutPutSelectAll; //Oggetto che conterrà l'output dei comandi sql che producono un output
             SqlCommand command; //Oggetto che conterrà il comando che di volta in volta cambierà a seconda delle richieste dell'utente
             String sql; //Stringa che conterrà la sintassi del comando;
@@ -112,7 +109,7 @@ namespace _5F_Gruppo_2_Server
                 if (OutPutSelect - QuantitàDaSottrarre < 0)//Se si sfora lo 0 produce errore
                 {
                     cnn.Close();//Chiude la conn in caso di errore
-                    return "009|" + Elementi[3];
+                    return "009|" + Elementi[1];
                 }
                 else
                     ModificaSuPezzo($"UPDATE dbo.Prodotti SET Quantità=Quantità-{QuantitàDaSottrarre} WHERE Codice_Prodotto= {Elementi[1]}", out command, cnn, adapter);

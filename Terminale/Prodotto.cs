@@ -11,7 +11,7 @@ namespace Terminale
         public string Codice { get; set; }
         public string Nome { get; set; }
         public int Quantita { get; set; }
-        public Prodotto(string codice, string nome, int quantita)
+        public Prodotto(string codice, int quantita, string nome)
         {
             Codice = codice;
             Nome = nome;

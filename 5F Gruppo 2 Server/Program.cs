@@ -12,7 +12,7 @@ namespace _5F_Gruppo_2_Server
     class Program
     {
         //INFORMAZIONE IMPORTANTE DA INSERIRE!git 
-        static string _nomePCDB = "DESKTOP-CDHTOA2";//Nome del pc su cui gira il database
+        static string _nomePCDB = "PC1229";//Nome del pc su cui gira il database
 
         static void Main(string[] args)
         {
@@ -70,11 +70,8 @@ namespace _5F_Gruppo_2_Server
                 //bytearr = Encoding.ASCII.GetBytes(s);
                 //h.Send(bytearr); //invia al client un messaggio
 
-                string connectionString;
-                SqlConnection cnn;
+                SqlConnection cnn = new SqlConnection($@"Data Source={_nomePCDB};Initial Catalog=Magazzino;User ID=sa;Password=burbero2020");
                 //connectionString = @"Data Source=PC1227;Initial Catalog=Magazzino;User ID=sa;Password=burbero2020";
-                connectionString = $@"Data Source={_nomePCDB};Initial Catalog=Magazzino;Integrated Security=SSPI;";
-                cnn = new SqlConnection(connectionString);
                 SqlDataReader OutPutSelectAll;
                 SqlCommand command;
                 String sql;
@@ -133,7 +130,7 @@ namespace _5F_Gruppo_2_Server
                 h.Close();
             }
         }
-        static string CreateMD5(string input)
+        string CreateMD5(string input)
         {
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
             {
