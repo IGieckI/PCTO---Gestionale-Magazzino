@@ -18,7 +18,7 @@ namespace Client_Test
             WriteLine("waiting for a response from the server...");
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            iPAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length - 1];
+            IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length - 1];
             //IPAddress ipAddress = IPAddress.Parse("10.12.0.28");
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
             Socket sender;
